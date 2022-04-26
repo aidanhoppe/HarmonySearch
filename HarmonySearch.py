@@ -22,7 +22,7 @@ def rosenbrock(x1, x2):
     else:
         return((x1-1)**2 + 100*(x2-x1**2)**2)
 
-def griewank_function(x1, x2):
+def griewank(x1, x2):
     x = [x1,x2]
     A = 0
     B = 1
