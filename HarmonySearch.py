@@ -47,7 +47,7 @@ while(HM[0][0]>.00001):
         #Choose new parameter (note) from Harmony memory with prob HMCR, or else randomly
         if(random.random()<HMCR):
             #Note is chosen from Harmony Memory
-            NH[i+1] = HM[random.randint(0,14)][i+1]
+            NH[i+1] = HM[random.randint(0,HMS-1)][i+1]
         else:
             #Note is chosen randomly
             NH[i+1] = random.uniform(-10,10)
