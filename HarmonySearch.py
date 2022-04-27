@@ -14,8 +14,8 @@ PAB = .1
 
 #-----
 #Decision Space Bounds = -2.048 -> 2.048 for rosenbrock and -512 -> 512 for griewank, select accordingly
-DB = 2.048
-#DB = 512.0
+#DB = 2.048
+DB = 512.0
 
 
 #Harmony Memory
@@ -39,7 +39,11 @@ def griewank(x):
     for i in range(dim):
         A += x[i]**2
         B *= math.cos(float(x[i]) / math.sqrt(i+1))
-    return 1 + (float(A)/4000.0) - float(B) 
+    return 1 + (float(A)/4000.0) - float(B)
+
+def cost(x):
+    return rosenbrock(x)
+    #return griewank(x)
 
 #Initialize Harmony Memory
 for i in range(HMS):
@@ -47,9 +51,7 @@ for i in range(HMS):
     newsol = [float('inf')]
     for _ in range(dimensions):
         newsol.append(random.uniform(-DB,DB))
-        #newsol.append(random.uniform(-512,512))
-    newsol[0] = rosenbrock(newsol[1:])
-    #newsol[0] = griewank(newsol[1:])
+    newsol[0] = cost(newsol[1:])
     HM.append(newsol)
 HM.sort()
 
@@ -72,8 +74,7 @@ for _ in range(100000):
             #Add random number to parameter within PAB designated bound.
             NH[i+1] += random.uniform(-PAB,PAB)
     #Set fitness given the new notes
-    NH[0] = rosenbrock(NH[1:])
-    #NH[0] = griewank(NH[1:])
+    NH[0] = cost(NH[1:])
     #Check if new solution is fit enough for Harmony Memory, replace least fit vector if so
     if(NH[0]<HM[-1][0]):
         HM.remove(HM[-1])
