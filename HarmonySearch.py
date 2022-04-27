@@ -1,47 +1,63 @@
 import math
 import random
+from scipy.optimize import rosen
 
 #Hyper-Paremeters
 #Harmony Memory Size
-HMS = 15
+HMS = 10
 #Harmony Memory Consideration Rate
-HMCR = .90
+HMCR = .95
 #Pitch Adjustment Rate
 PAR = .5
 #Pitch Adjustment Bound +/-
-PAB = .05
+PAB = .1
+
+#-----
+#Decision Space Bounds = -2.048 -> 2.048 for rosenbrock and -512 -> 512 for griewank, select accordingly
+DB = 2.048
+#DB = 512.0
+
 
 #Harmony Memory
 #Harmony memory will get filled with possible solution vectors (sol)
-#Each solution vector (sol) is a list in the form: [fitness, x1, x2]
+#Each solution vector (sol) is a list in the form: [fitness, x1, x2] where x1 and x2 are decision variables for the optimization function
 HM = []
 
-def rosenbrock(x1, x2):
-    if(abs(x1)>10 or abs(x2)>10):
-        return(float('inf'))
-    else:
-        return((x1-1)**2 + 100*(x2-x1**2)**2)
+def rosenbrock(x):
+    for xi in x:
+        if(abs(xi)>DB):
+            return float('inf')
+    return rosen(x)
 
-def griewank(x1, x2):
-    x = [x1,x2]
+def griewank(x):
+    for xi in x:
+        if(abs(xi)>DB):
+            return float('inf')
+    dim = len(x)
     A = 0
     B = 1
-    for i in range(2):
+    for i in range(dim):
         A += x[i]**2
         B *= math.cos(float(x[i]) / math.sqrt(i+1))
     return 1 + (float(A)/4000.0) - float(B) 
 
 #Initialize Harmony Memory
 for i in range(HMS):
-    newsol = [float('inf'), random.uniform(-10,10), random.uniform(-10,10)]
-    newsol[0] = rosenbrock(newsol[1],newsol[2])
-    #newsol[0] = griewank(newsol[1],newsol[2])
+    dimensions = 30
+    newsol = [float('inf')]
+    for _ in range(dimensions):
+        newsol.append(random.uniform(-DB,DB))
+        #newsol.append(random.uniform(-512,512))
+    newsol[0] = rosenbrock(newsol[1:])
+    #newsol[0] = griewank(newsol[1:])
     HM.append(newsol)
 HM.sort()
 
-while(HM[0][0]>.00001):
+for _ in range(100000):
     #New Harmony is Improvised
-    NH = [float('inf'),0,0]
+    NH = [float('inf')]
+    for _ in range(30):
+        NH.append(0)
     #Choose each parameter
     for i in range(len(NH)-1):
         #Choose new parameter (note) from Harmony memory with prob HMCR, or else randomly
@@ -50,15 +66,15 @@ while(HM[0][0]>.00001):
             NH[i+1] = HM[random.randint(0,HMS-1)][i+1]
         else:
             #Note is chosen randomly
-            NH[i+1] = random.uniform(-10,10)
+            NH[i+1] = random.uniform(-DB,DB)
         #Adjust chosen parameter (note) according to Pitch Adjustment Rate
         if(random.random()<PAR):
             #Add random number to parameter within PAB designated bound.
             NH[i+1] += random.uniform(-PAB,PAB)
     #Set fitness given the new notes
-    NH[0] = rosenbrock(NH[1],NH[2])
-    #NH[0] = griewank(NH[1],NH[2])
-    #Cehck if new solution is fit enough for solution vector, replace least fit vector if so
+    NH[0] = rosenbrock(NH[1:])
+    #NH[0] = griewank(NH[1:])
+    #Check if new solution is fit enough for Harmony Memory, replace least fit vector if so
     if(NH[0]<HM[-1][0]):
         HM.remove(HM[-1])
         HM.append(NH)
