@@ -32,9 +32,9 @@ HMS = 10
 IHMCR = .5
 HMCR = IHMCR
 #Initial Pitch Adjustment Rate
-IPAR = .7
-#PARMax = 1
-#PARMin = .05
+#IPAR = .7
+PARMax = .8
+PARMin = .3
 #Initial Pitch Adjustment Bound +/-
 IPAB = DB/5
 
@@ -82,11 +82,11 @@ for it in range(ITS):
     #NOT INCLUDED IN OFFICIAL IHS BUT HELPS:
     #HMCR = HMCRMin + (HMCRMin + HMCRMax)*it/ITS
 
-    #In accordance to my ideas similar to IHS
+    #Update PAB, PAR, and HMCR in accordance to my ideas similar to IHS
     PAB = IPAB / math.sqrt(it+1)
-    PAR = IPAR
-    #PAR = it/(it+100)
-    #PAR = PARMin + (PARMin + PARMax)*it/ITS
+    #PAR = IPAR
+    #PAR = it/(it+25)
+    PAR = PARMin + (PARMin + PARMax)*it/ITS
     HMCR = (1 - HMCR)/5 + HMCR
 
 
