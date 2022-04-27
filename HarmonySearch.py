@@ -14,8 +14,8 @@ PAB = .1
 
 #-----
 #Decision Space Bounds = -2.048 -> 2.048 for rosenbrock and -512 -> 512 for griewank, select accordingly
-#DB = 2.048
-DB = 512.0
+DB = 2.048
+#DB = 512.0
 
 
 #Harmony Memory
